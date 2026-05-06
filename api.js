@@ -27,38 +27,22 @@ const cards = [
 
 const port = process.env.PORT || 3000;
 
-function drawRandom(arr, n) {
-  const result = [];
-  const used = new Set();
-  while (result.length < n) {
-    const i = Math.floor(Math.random() * arr.length);
-    if (!used.has(i)) {
-      used.add(i);
-      result.push(arr[i]);
-    }
-  }
-  return result;
+function drawOne(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
-http
-  .createServer((req, res) => {
-    if (req.url === "/tarot") {
-      const draw = drawRandom(cards, 1);
-      res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
-      res.end(
-        "🔮 ไพ่ของคุณ: " +
-          draw
-            .map((c) => {
-              const [name, desc] = c.split(" — ");
-              return `${name} → ${desc}`;
-            })
-            .join(" | "),
-      );
-    } else {
-      res.writeHead(404);
-      res.end("Not Found");
-    }
-  })
-  .listen(port);
+http.createServer((req, res) => {
+  if (req.url === "/tarot") {
+    const card = drawOne(cards);
+
+    const [name, desc] = card.split(" — ");
+
+    res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end(`🔮 ไพ่ของคุณ: ${name} → ${desc}`);
+  } else {
+    res.writeHead(404);
+    res.end("Not Found");
+  }
+}).listen(port);
 
 console.log("API RUNNING");
